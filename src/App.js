@@ -9,6 +9,7 @@ import {
   Link
 } from "react-router-dom";
 
+import Start from './components/PremiumOffer/Start.jsx';
 import BasicDetailsForm from './components/PremiumOffer/BasicDetailsForm.jsx';
 import ConditionForm from './components/PremiumOffer/ConditionForm.jsx';
 import PhotosForm from './components/PremiumOffer/PhotosForm.jsx';
@@ -18,7 +19,7 @@ import WheelsAndTyresForm from './components/PremiumOffer/WheelsAndTyresForm.jsx
 import Summary from './components/Form/Summary.jsx';
 import HiddenForms from './components/Form/HiddenForms.jsx';
 
-let accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF2cmlsQG1vdG9yd2F5LmNvLnVrIiwicG9zdGNvZGUiOiJXMzZBVyIsImlhdCI6MTUzOTI2ODY3MiwiZXhwIjoxNTQxODYwNjcyfQ.tgU3Hdld6IRzBjsS1ZUGfDu3YTCHq6x_j2l3QOzLEnU`;
+let accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNjYXJqb0Btb3RvcndheS5jby51ayIsInBvc3Rjb2RlIjoiVzM2QVciLCJpYXQiOjE1NDExNjA3MzAsImV4cCI6MTU0Mzc1MjczMH0.HBe6-FlNz3Ip_MI0ogGHEE9obM69OfFSWOmCCII2LrU`;
 let params = (new URL(document.location)).searchParams;
 let token = params.get('token') || accessToken;
 let vrm = params.get('vrm') || 'HJ1';
@@ -41,7 +42,7 @@ class App extends React.Component {
         'photos',
         'summary-view'
       ];
-
+      window.app = this;
       this.state = {
         raw: {},
         progress: {},
@@ -57,51 +58,52 @@ class App extends React.Component {
       this.setState(state);
 
       let setState = () => {
-      let offer = Object.assign({}, this.state.offer);
-      offer[data.name] = data.data;
+        let offer = Object.assign({}, this.state.offer);
+        offer[data.name] = data.data;
 
-      this.setState({
-        offer,
-      }, () => {
-        console.log(`%c${e.type} event`, 'font-weight: bold; text-decoration: underline; text-transform: capitalize; ', 'Sending to API =>', offer);
+        this.setState({
+          offer,
+        }, () => {
+          console.log(2, JSON.parse(JSON.stringify(window.Offer['photos'].__Model)));
+          //console.log(`%c${e.type} event`, 'font-weight: bold; text-decoration: underline; text-transform: capitalize; ', 'Sending to API =>', offer);
 
-        // Silly visual effect, not really needed
-        let $summary = document.getElementById('summary');
-        let $li = $summary.querySelector(`li[data-value*="${e.target.name || e.target.value}"]`);
+          // Silly visual effect, not really needed
+          let $summary = document.getElementById('summary');
+          let $li = $summary.querySelector(`li[data-value*="${e.target.name || e.target.value}"]`);
 
-        // Doesn't work on fieldsets yet when removing item
-        if ($li) {
-          $li.addEventListener('animationend', () => {
+          // Doesn't work on fieldsets yet when removing item
+          if ($li) {
+            $li.addEventListener('animationend', () => {
+              $li.classList.remove('change');
+            }, {
+              once: true
+            });
             $li.classList.remove('change');
-          }, {
-            once: true
-          });
-          $li.classList.remove('change');
-          requestAnimationFrame(() => {
-            $li.classList.add('change');
-            //$li.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
-          });
-        }
+            requestAnimationFrame(() => {
+              $li.classList.add('change');
+              //$li.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+            });
+          }
 
-        fetch(`${platform}/vehicle-details`,
-          {
-            "credentials":"omit",
-            "headers": {
-              "content-type": "application/json",
-              "x-access-token": accessToken
-            },
-            "body": JSON.stringify({
-              id: this.state.id,
-              filled_sections: ["basic_details", "service_history", "condition", "wheels_and_tyres", "photos"],
-              data: this.state.offer
-            }),
-            "method":"POST",
-            "mode":"cors"
-          });
-      });
+          fetch(`https://motorway-dealership-platform-staging.azurewebsites.net/api/v2/vehicle-details`,
+            {
+              "credentials":"omit",
+              "headers": {
+                "content-type": "application/json",
+                "x-access-token": token
+              },
+              "body": JSON.stringify({
+                id: this.state.id,
+                filled_sections: ["basic_details", "service_history", "condition", "wheels_and_tyres", "photos"],
+                data: this.state.offer
+              }),
+              "method":"POST",
+              "mode":"cors"
+            });
+        });
     };
 
-    if (e.target) {
+    if (e && e.target) {
       if (e.target.tagName === 'SELECT' || ['checkbox', 'radio', 'month'].includes(e.target.type)) {
         if (e.type === 'change') {
           setState();
@@ -130,7 +132,8 @@ class App extends React.Component {
           loading: false,
           offer: offer.data,
           filledSections: offer.filled_sections,
-          initialData: offer
+          initialData: offer,
+          photos: offer.photos
         }, () => {
           console.log(offer);
         });
@@ -175,7 +178,7 @@ class App extends React.Component {
       service_history: <ServiceHistoryForm key='service_history' initialData={this.hydrateUpToDateData('service_history')} seen={this.state.filledSections.includes('service_history')} />,
       condition: <ConditionForm key='condition' initialData={this.hydrateUpToDateData('condition')} routes={routes} seen={this.state.filledSections.includes('condition')}/>,
       wheels_and_tyres: <WheelsAndTyresForm key='wheels_and_tyres' initialData={this.hydrateUpToDateData('wheels_and_tyres')} routes={routes} seen={this.state.filledSections.includes('wheels_and_tyres')} />,
-      photos: <PhotosForm key='photos' routes={routes} update={this.update} />,
+      photos: <PhotosForm key='photos' routes={routes} update={this.update} photos={this.state.photos} conditionAndWheels={{condition: this.hydrateUpToDateData('condition'), wheels_and_tyres: this.hydrateUpToDateData('wheels_and_tyres')}}/>,
       summary_view: <Summary key='summary' order={routes.map(r => r.replace(/-/g, '_'))} data={this.state.raw} offer={this.state.offer} />
     };
 
@@ -224,7 +227,7 @@ class App extends React.Component {
                         })
                       }
                       <Route render={() => {
-                        return (<div>Default</div>)
+                        return (<Start/>)
                       }} />
                     </Switch>
                   </CSSTransition>

@@ -65,6 +65,10 @@ class Form extends React.Component {
 
 	componentDidUpdate() {
 		//console.log(`Start render to update for \`${this.props.name}\``, `${Math.round(performance.now() - this._time)}ms`);
+		if (this.__PreviousModel !== JSON.stringify(this.__Model)) {
+			console.log('UPDATING');
+			this.onUpdate();
+		}
 	}
 
 	onBlur(e) {
@@ -277,6 +281,8 @@ class Form extends React.Component {
 			percentage: 0
 		};
 
+		this.__PreviousModel = JSON.stringify(this.__Model);
+
 		let updateModel = (_ReactProps) => {
 			if (!_ReactProps) { return; }
 			
@@ -318,6 +324,15 @@ class Form extends React.Component {
 			return this.__resolveModelPath(name, this.__Model) || {};
 		};
 
+		let pruneModel = (parentKey) => {
+			this.__Model = Object.entries(this.__Model).reduce((accumulator, currentValue, currentIndex, array) => {
+				if (currentValue[1].parentKey !== parentKey) {
+					accumulator[currentValue[0]] = currentValue[1];
+				}
+				return accumulator;
+			}, {});
+		}
+
 		let generateModel = (children, mergeParentProps) => {
 			return React.Children.map(children, (child) => {
 				// This is support for non-node elements (eg. pure text), they have no props
@@ -330,11 +345,19 @@ class Form extends React.Component {
 
 				if (child.type === Field) {
 					if (Array.isArray(child.props.elements)) {
+						if (child.props.parentKey) {
+							// Nuke any existing values associated with this key
+							pruneModel(child.props.parentKey);
+						}
+
 						child.props.elements.forEach(el => {
 							let _ReactProps = this._getReactProps({
 								type: el.element,
 								props: el
-							}, mergeParentProps);
+							}, {
+								parentKey: child.props.parentKey,
+								...mergeParentProps 
+							});
 							updateModel(_ReactProps);
 						});
 						return;
@@ -467,9 +490,6 @@ class Form extends React.Component {
 					_props.onChange = child.props.onChange || (() => {});
 				}
 
-				/**
-				 * TODO - fieldset with elements seems to not like children
-				 */
 				// Remove reserved props
 				let {fieldset, meta, ...props} = child.props;
 

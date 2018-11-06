@@ -45,18 +45,18 @@ class ServiceHistoryForm extends React.Component {
 				<input id="service_history_2" type="radio" name="service_history" value="not_applicable" required/>
 				<label htmlFor="service_history_2">Not yet due first service</label>
 
-				<h4>Do you have the service record?</h4>
-				<input id="service_record_0" type="radio" name="service_record" value="true" required />
-				<label htmlFor="service_record_0">Yes</label>
-				<input id="service_record_1" type="radio" name="service_record" value="false" required />
-				<label htmlFor="service_record_1">No</label>
-
 				<Conditional
-						name="service_record"
+						name="service_history"
 						condition={(input) => {
-							return (input.checked && input.value === true);
+							return (input.checked && input.value === 'yes');
 						}}
 					>
+					<h4>Do you have the service record?</h4>
+					<input id="service_record_0" type="radio" name="service_record" value="true" required />
+					<label htmlFor="service_record_0">Yes</label>
+					<input id="service_record_1" type="radio" name="service_record" value="false" required />
+					<label htmlFor="service_record_1">No</label>
+
 					<h4>How many services do you have recorded in the service record?</h4>
 
 					<h6>Manufacturer or official dealer services:</h6>

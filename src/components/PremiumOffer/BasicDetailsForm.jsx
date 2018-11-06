@@ -14,14 +14,6 @@ class BasicDetailsForm extends React.Component {
 		this.update = this.update.bind(this);
 	}
 
-	componentDidMount() {
-		console.log('mount');
-	}
-
-	componentWillUnmount() {
-		console.log('unmount');
-	}
-
 	initialDataTransform(initialData={}) {
 		if (initialData['num_keys']) {
 			if (initialData['num_keys'] && initialData['num_keys'] !== 2) {

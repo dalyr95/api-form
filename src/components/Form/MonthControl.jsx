@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 class MonthControl extends React.Component {
   constructor(props) {
@@ -82,7 +82,7 @@ class MonthControl extends React.Component {
       }
     }
 
-    let valid = (this.props.valid && value && value.match(/^\d{4}-\d{2}$/));
+    //let valid = (this.props.valid && value && value.match(/^\d{4}-\d{2}$/));
 
     if (this.state.fallback) {
       const fillRange = (start, end) => {

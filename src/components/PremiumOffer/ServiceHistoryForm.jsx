@@ -8,10 +8,6 @@ import MonthControl from '../Form/MonthControl.jsx';
 import Navigation from './Navigation.jsx';
 
 class ServiceHistoryForm extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
 	initialDataTransform(initialData={}) {
 		if (!initialData) { return {}; }
 

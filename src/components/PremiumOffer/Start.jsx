@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 class Navigation extends React.Component {
 	render() {
 		return (
-			<div>
+			<div className="panel">
 
 				<h2>Premium Buyer Service</h2>
 				<p>To find your highest offer from a specialist buyer, we need some extra details about your car.</p>

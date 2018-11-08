@@ -117,8 +117,8 @@ class App extends React.Component {
 
   async componentDidMount() {
     //fetch("https://motorway-platform-stage.herokuapp.com/api/premium-offer?vrm=RD1", {"credentials":"omit","headers":{"x-access-token":accessToken},"body":null,"method":"GET","mode":"no-cors"})
-    fetch(`${platform}/premium-offer?vrm=${vrm}`, {"credentials":"omit","headers":{"x-access-token":token},"body":null,"method":"GET","mode":"cors"})
-    //fetch('/offer.json')
+    //fetch(`${platform}/premium-offer?vrm=${vrm}`, {"credentials":"omit","headers":{"x-access-token":token},"body":null,"method":"GET","mode":"cors"})
+    fetch('/offer.json')
       .then(resp => resp.json())
       .then((offer) => {
         if (!offer.data) {
@@ -174,11 +174,11 @@ class App extends React.Component {
     let routes = this.routes;
 
     let steps = {
-      basic_details : <BasicDetailsForm key='basic_details' initialData={this.hydrateUpToDateData('basic_details')} fields={this.state.initialData.fields} model={this.state.offer} seen={this.state.filledSections.includes('basic_details')}/>,
-      service_history: <ServiceHistoryForm key='service_history' initialData={this.hydrateUpToDateData('service_history')} seen={this.state.filledSections.includes('service_history')} />,
-      condition: <ConditionForm key='condition' initialData={this.hydrateUpToDateData('condition')} routes={routes} seen={this.state.filledSections.includes('condition')}/>,
-      wheels_and_tyres: <WheelsAndTyresForm key='wheels_and_tyres' initialData={this.hydrateUpToDateData('wheels_and_tyres')} routes={routes} seen={this.state.filledSections.includes('wheels_and_tyres')} />,
-      photos: <PhotosForm key='photos' routes={routes} update={this.update} photos={this.state.photos} conditionAndWheels={{condition: this.hydrateUpToDateData('condition'), wheels_and_tyres: this.hydrateUpToDateData('wheels_and_tyres')}}/>,
+      basic_details : <BasicDetailsForm key='basic_details' initialData={this.hydrateUpToDateData('basic_details')} fields={this.state.initialData.fields} model={this.state.offer} />,
+      service_history: <ServiceHistoryForm key='service_history' initialData={this.hydrateUpToDateData('service_history')} />,
+      condition: <ConditionForm key='condition' initialData={this.hydrateUpToDateData('condition')} />,
+      wheels_and_tyres: <WheelsAndTyresForm key='wheels_and_tyres' initialData={this.hydrateUpToDateData('wheels_and_tyres')} />,
+      photos: <PhotosForm key='photos' id={this.state.id} update={this.update} photos={this.state.photos} conditionAndWheels={{condition: this.hydrateUpToDateData('condition'), wheels_and_tyres: this.hydrateUpToDateData('wheels_and_tyres')}}/>,
       summary_view: <Summary key='summary' order={routes.map(r => r.replace(/-/g, '_'))} data={this.state.raw} offer={this.state.offer} />
     };
 
@@ -190,9 +190,15 @@ class App extends React.Component {
             <div className="progress">
               {
                 Object.keys(steps).filter((s,i) => (i !== routes.length - 1)).map(s => {
+                  let r = `/${s.replace(/_/g, '-')}`;
+                  let path = location.pathname.replace(/^\//, '');
+                  let here = (path.length > 0) ? r.includes(location.pathname.replace(/^\//, '')) : false;
+
                   return (this.state.progress[s]) ? (
-                    <div key={s} data-percentage={`${this.state.progress[s].percentage}%`}>
-                        <Link to={`/${s.replace(/_/g, '-')}`} />
+                    <div className={(here) ? 'here' : null} key={s} data-percentage={`${this.state.progress[s].percentage}%`}>
+                        {
+                          (!here) ? (<Link to={r} />) : (null)
+                        }
                         <span style={{height: `${this.state.progress[s].percentage}%`}}></span>
                     </div>
                   ) : (
@@ -220,7 +226,8 @@ class App extends React.Component {
                               return React.cloneElement(steps[s], {
                                 location: location,
                                 routes: routes,
-                                update: this.update
+                                update: this.update,
+                                seen: this.state.filledSections.includes(s)
                               });
                             }} />
                           )

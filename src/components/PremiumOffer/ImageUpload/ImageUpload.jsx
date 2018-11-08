@@ -128,7 +128,10 @@ class Upload extends React.Component {
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status !== 200) {
           alert(`Something has gone wrong.`);
-          throw new Error(`Premium Crop Image: (${xhr.status}) - ${JSON.stringify(xhr.responseText)}`);
+          /**
+           * TODO - Reenable this outside of CRAP
+           */
+          //throw new Error(`Premium Crop Image: (${xhr.status}) - ${JSON.stringify(xhr.responseText)}`);
         }
       };
 
@@ -152,7 +155,10 @@ class Upload extends React.Component {
           xhr.addEventListener('readystatechange', () => {
             if (xhr.readyState === 4 && xhr.status !== 200) {
               alert(`Something has gone wrong.`);
-              throw new Error(`Premium Delete Image: (${xhr.status}) - ${JSON.stringify(xhr.responseText)}`);
+          /**
+           * TODO - Reenable this outside of CRAP
+           */
+              //throw new Error(`Premium Delete Image: (${xhr.status}) - ${JSON.stringify(xhr.responseText)}`);
             }
           });
 
@@ -333,7 +339,10 @@ class Upload extends React.Component {
 
           alert(`Something has gone wrong.`);
 
-          throw new Error(`Premium Upload Image: (${xhr.status}) - ${JSON.stringify(xhr.responseText)}`);
+          /**
+           * TODO - Reenable this outside of CRAP
+           */
+          //throw new Error(`Premium Upload Image: (${xhr.status}) - ${JSON.stringify(xhr.responseText)}`);
         };
 
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -400,7 +409,7 @@ class Upload extends React.Component {
       form.append('file', input.file);
       form.append('name', `${input.name}-${Date.now()}`);
       form.append('kind', input.name.replace(/-[0-9]*$/, ''));
-      form.append('id', this.props.premiumOffer.id);
+      form.append('id', this.props.id);
 
       xhr.open('POST', this.PHOTOS_API, true);
       xhr.setRequestHeader('x-access-token', this.props.auth_token);

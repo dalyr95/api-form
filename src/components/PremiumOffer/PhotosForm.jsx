@@ -279,6 +279,7 @@ class PhotosForm extends React.Component {
         <h2>Photos</h2>
 				<Field parentKey='photos-elements' elements={elements}></Field>
         <ImageUpload
+          id={this.props.id}
           endpoints={{
             gigApi: 'https://motorway-dealership-platform-staging.azurewebsites.net/api',
             premiumFormImgix: '//motorway-stage.imgix.net'

@@ -65,7 +65,9 @@ class Form extends React.Component {
 
 	componentDidUpdate() {
 		//console.log(`Start render to update for \`${this.props.name}\``, `${Math.round(performance.now() - this._time)}ms`);
-		if (this.__PreviousModel !== JSON.stringify(this.__Model)) {
+
+		// Don't like triggering updates in `componentDidUpdate`, should move to a listener store
+		if (this.props.listen && this.__PreviousModel !== JSON.stringify(this.__Model)) {
 			console.log('UPDATING');
 			this.onUpdate();
 		}
@@ -99,7 +101,10 @@ class Form extends React.Component {
 		let DOMAttributes = this._parseDOMAttributesToReactProps(this._getDOMAttributes(e.target));
 		DOMAttributes.HTMLvalid = e.target.checkValidity();
 		DOMAttributes.value = value || DOMAttributes.value;
-		DOMAttributes.valid = this._isElementValid(DOMAttributes);
+
+		let valid = this._isElementValid(DOMAttributes);
+		DOMAttributes.valid = valid.valid;
+		DOMAttributes.value = valid.value; // Allow modificatons of values
 
 		let name = this.generateFetchName(DOMAttributes);
 
@@ -109,6 +114,10 @@ class Form extends React.Component {
 		}
 
 		let model = this.__resolveModelPath(name, this.__Model);
+		/**
+		 * TODO - Photos damage breaks here
+		 */
+
 		const meta = model.meta;
 		model = this.__mergeDeep(model, DOMAttributes);
 
@@ -281,7 +290,9 @@ class Form extends React.Component {
 			percentage: 0
 		};
 
-		this.__PreviousModel = JSON.stringify(this.__Model);
+		if (this.props.listen) {
+			this.__PreviousModel = JSON.stringify(this.__Model);
+		}
 
 		let updateModel = (_ReactProps) => {
 			if (!_ReactProps) { return; }
@@ -456,7 +467,7 @@ class Form extends React.Component {
 					}
 				}
 
-				// Work out progress
+				// Work out progress and add classNames
 				if (_values) {
 					if (_values.required === true) {
 						this._progress.total[_values.name] = true;
@@ -510,14 +521,14 @@ class Form extends React.Component {
 			generateModel(this.props.children);
 			children = renderWrappedChildren(this.props.children);
 		}
-
+		console.log(this._progress);
 		this._progress.completed = Object.keys(this._progress.completed).length;
 		this._progress.total = Object.keys(this._progress.total).length;
 		this._progress.percentage = Math.round((this._progress.completed / this._progress.total) * 100);
 		this._progress.percentage = Number.isInteger(this._progress.percentage) ? this._progress.percentage : 100;
 
 		// Remove any reserved props such as update
-		let {update, persistEvents, onMount, visible, initialData, initialDataTransform, updateForm, seen, ...props} = this.props;
+		let {update, persistEvents, onMount, visible, initialData, initialDataTransform, updateForm, seen, listen, ...props} = this.props;
 
 		if (!this.props.children || this.props.visible === false) {
 			return (null);
@@ -592,9 +603,9 @@ class Form extends React.Component {
 	_getReactProps($el, parentProps) {
 		if (this._formElementTypes.includes($el.type)) {
 			let valid = true;
-			let value = $el.props.defaultValue || '';
+			let value = $el.props.defaultValue || ''; // Just concerning ourselves with 'default' props, values will assigned later
 
-			valid = this._isElementValid($el.props);
+			valid = this._isElementValid($el.props).valid;
 
 			let attributes = {
 				checked: $el.props.checked || false,
@@ -628,7 +639,23 @@ class Form extends React.Component {
 			}
 		}
 
-		return valid;
+		if (props.type === 'number') {
+			valid = !isNaN(value);
+
+			if (valid) {
+				if (props.min && value < props.min) {
+					valid = false;
+				}
+				if (props.max && value > props.max) {
+					valid = false;
+				}
+			}
+		}
+
+		return {
+			valid: valid,
+			value: props.value
+		};
 	}
 
 	_parseDOMAttributesToReactProps(dom) {
@@ -669,6 +696,11 @@ class Form extends React.Component {
 				
 
 				return;
+			}
+
+			// Don't send invalid IDs to the API
+			if (!value.valid) {
+				v = null;
 			}
 
 			values[key] = v;

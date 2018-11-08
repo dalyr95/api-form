@@ -60,6 +60,7 @@ class ServiceHistoryForm extends React.Component {
 					<h4>How many services do you have recorded in the service record?</h4>
 
 					<h6>Manufacturer or official dealer services:</h6>
+					{/* TODO - Can type in -10 */}
 					<label htmlFor="service_stamps_official">Manufacturer or official dealer services:</label>
 					<input name="service_stamps_official" type="number" min="0" placeholder="0" value="0" required />
 

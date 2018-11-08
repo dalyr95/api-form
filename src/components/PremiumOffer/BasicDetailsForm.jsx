@@ -133,6 +133,9 @@ class BasicDetailsForm extends React.Component {
 						</select>
 					</label>
 
+						<input id="num_keys_0___00000" type="radio" name="num_keys1234" value="2" required/>
+						<label htmlFor="num_keys_0___00000">Yes</label>
+
 					<h4>Do you have two working keys for the car?</h4>
 					{/* Use field to pass down summary */}
 					<Field handleOwnPropagation={true} meta={{summary: {
@@ -147,7 +150,7 @@ class BasicDetailsForm extends React.Component {
 							return value;
 						}
 					}}}>
-						<input id="num_keys_0___0" type="radio" name="num_keys0" value="2" required/>
+						<input id="num_keys_0___0" type="radio" name="num_keys0" value="2" required meta={{summary: {label: 'scarjo'}}}/>
 						<label htmlFor="num_keys_0___0">Yes</label>
 						<input id="num_keys_1___0" type="radio" name="num_keys0" value="none" required/>
 						<label htmlFor="num_keys_1___0">No</label>

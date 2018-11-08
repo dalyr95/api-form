@@ -96,7 +96,7 @@ class BasicDetailsForm extends React.Component {
 						</Fieldset>
 						*/
 					}
-
+					{/* TODO - Support meta on an input */}
 					<h4>What colour are the seats?</h4>
 					<label>
 						<select name="seat_color" required meta={{summary: { mutate: function(fields) {

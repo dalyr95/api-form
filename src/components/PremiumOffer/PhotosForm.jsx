@@ -3,6 +3,8 @@ import React from 'react';
 import Form from '../Form/Form.jsx';
 import Field from '../Form/Field.jsx';
 
+import ImageUpload from './ImageUpload/ImageUpload.jsx';
+
 import Navigation from './Navigation.jsx';
 
 class PhotosForm extends React.Component {
@@ -148,40 +150,121 @@ class PhotosForm extends React.Component {
       }
     }
   }
-  
-	shouldComponentUpdate() {
-		return (this.props.visible !== false);
-	}
 
-	componentDidMount() {
-		return;
-		setTimeout(() => {
-			console.log(21312323);
-			this.setState({
-				damage: false
-			});
-		}, 5000);
-	}
+  update() {
+    console.log('UPDATE!!!!');
+  }
 
 	render() {
 		let elements = [];
 
-		Object.values(this.state.sections).forEach(s => {
+    let damageSections = [];
+    let sections = JSON.parse(JSON.stringify(this.state.sections));
+    let damageSectionsClone = JSON.parse(JSON.stringify(this.state.sections.damage.inputs));
+    let damageSectionsImages = {};
+
+    let data = this.props;
+    let photos = data.photos;
+    let conditionAndWheels = data.conditionAndWheels;
+
+    if (photos && photos.length >= 0) {
+      photos.forEach(photo => {
+        Object.entries(sections).forEach(section => {
+          let title = section[0];
+          section = section[1];
+
+          section.inputs.forEach(input => {
+            if (input.name === photo.kind) {
+              Object.keys(photo.meta).map((key) => {
+                photo.meta[key] = parseInt(photo.meta[key]);
+              });
+
+              input.blobURL = photo.url;
+              input.externalURL = photo.url;
+              input.coords = photo.meta;
+
+              if (title === 'damage') {
+                damageSectionsImages[input.name] = damageSectionsImages[input.name] + 1 || 0;
+                damageSections.push({...input, name: `${input.name}-${damageSectionsImages[input.name]}`});
+              }
+            }
+          });
+        });
+      });
+    }
+
+    //console.log(2, conditionAndWheels.condition.scratches);
+
+    sections.damage.inputs = sections.damage.inputs.filter(section => {
+      let path = section.condition.split('.');
+      return (conditionAndWheels[path[0]][path[1]] === true);
+    }).sort((a, b) => a.name.localeCompare(b.name));
+
+    //console.log(3, JSON.parse(JSON.stringify(sections.damage.inputs)));
+
+		Object.values(sections).forEach(s => {
 			s.inputs.forEach(i => {
 				elements.push({
 					element: 'input',
 					type: 'file',
 					required: true,
-					value: null,
+					value: i.externalURL || null,
 					...i
 				})
 			});
-		});
+    });
+/*
+    let damageSections = [];
+    let damageSectionsClone = JSON.parse(JSON.stringify(this.state.sections.damage.inputs));
+    let damageSectionsImages = {};
 
+    let data = this.props;
+    let photosData = data.dataForPhotos;
+    let photos = data.photos;
+
+    if (photos && photos.length >= 0) {
+      photos.forEach(photo => {
+        Object.entries(this.state.sections).forEach(section => {
+          let title = section[0];
+          section = section[1];
+
+          section.inputs.forEach(input => {
+            if (input.name === photo.kind) {
+              Object.keys(photo.meta).map((key) => {
+                photo.meta[key] = parseInt(photo.meta[key]);
+              });
+
+              input.blobURL = photo.url;
+              input.externalURL = photo.url;
+              input.coords = photo.meta;
+
+              if (title === 'damage') {
+                damageSectionsImages[input.name] = damageSectionsImages[input.name] + 1 || 0;
+                damageSections.push({...input, name: `${input.name}-${damageSectionsImages[input.name]}`});
+              }
+            }
+          });
+        });
+      });
+    }
+
+    if (damageSections.length > 0) {
+      this.state.sections.damage.inputs = damageSectionsClone.map(i => {
+        return {...i, name: `${i.name}-${damageSectionsImages[i.name] + 1 || 0}`};
+      }).concat(damageSections).sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    let details = Object.assign({}, photosData);
+
+    this.state.sections.damage.inputs = this.state.sections.damage.inputs.filter(section => {
+      let path = section.condition.split('.');
+      return (details[path[0]][path[1]] === true);
+    }).sort((a, b) => a.name.localeCompare(b.name));
+*/
 
 		return (
 			<Form
-				//update={this.update}
+				update={this.props.update}
 				name='photos'
 				onMount={this.props.update}
 				onBlur={this.props.update}
@@ -190,11 +273,19 @@ class PhotosForm extends React.Component {
 				//onFocus={this.update}
 				persistEvents={false} // Has a performance impact, only use if you need event data
         visible={this.props.visible}
-				seen={this.props.seen}
+        seen={this.props.seen}
+        listen={true}
 			>	
         <h2>Photos</h2>
-				<Field elements={elements}></Field>
-        <img src="https://media.tenor.com/images/feea9c253d7f33dd893efbaf922ea2e2/tenor.gif"/>
+				<Field parentKey='photos-elements' elements={elements}></Field>
+        <ImageUpload
+          id={this.props.id}
+          endpoints={{
+            gigApi: 'https://motorway-dealership-platform-staging.azurewebsites.net/api',
+            premiumFormImgix: '//motorway-stage.imgix.net'
+          }}
+          sections={this.state.sections}
+        />
         <Navigation {...this.props}></Navigation>
 			</Form>
 		);

@@ -65,6 +65,12 @@ class Form extends React.Component {
 
 	componentDidUpdate() {
 		//console.log(`Start render to update for \`${this.props.name}\``, `${Math.round(performance.now() - this._time)}ms`);
+
+		// Don't like triggering updates in `componentDidUpdate`, should move to a listener store
+		if (this.props.listen && this.__PreviousModel !== JSON.stringify(this.__Model)) {
+			console.log('UPDATING');
+			this.onUpdate();
+		}
 	}
 
 	onBlur(e) {
@@ -277,6 +283,10 @@ class Form extends React.Component {
 			percentage: 0
 		};
 
+		if (this.props.listen) {
+			this.__PreviousModel = JSON.stringify(this.__Model);
+		}
+
 		let updateModel = (_ReactProps) => {
 			if (!_ReactProps) { return; }
 			
@@ -318,6 +328,15 @@ class Form extends React.Component {
 			return this.__resolveModelPath(name, this.__Model) || {};
 		};
 
+		let pruneModel = (parentKey) => {
+			this.__Model = Object.entries(this.__Model).reduce((accumulator, currentValue, currentIndex, array) => {
+				if (currentValue[1].parentKey !== parentKey) {
+					accumulator[currentValue[0]] = currentValue[1];
+				}
+				return accumulator;
+			}, {});
+		}
+
 		let generateModel = (children, mergeParentProps) => {
 			return React.Children.map(children, (child) => {
 				// This is support for non-node elements (eg. pure text), they have no props
@@ -330,11 +349,19 @@ class Form extends React.Component {
 
 				if (child.type === Field) {
 					if (Array.isArray(child.props.elements)) {
+						if (child.props.parentKey) {
+							// Nuke any existing values associated with this key
+							pruneModel(child.props.parentKey);
+						}
+
 						child.props.elements.forEach(el => {
 							let _ReactProps = this._getReactProps({
 								type: el.element,
 								props: el
-							}, mergeParentProps);
+							}, {
+								parentKey: child.props.parentKey,
+								...mergeParentProps 
+							});
 							updateModel(_ReactProps);
 						});
 						return;
@@ -497,7 +524,7 @@ class Form extends React.Component {
 		this._progress.percentage = Number.isInteger(this._progress.percentage) ? this._progress.percentage : 100;
 
 		// Remove any reserved props such as update
-		let {update, persistEvents, onMount, visible, initialData, initialDataTransform, updateForm, seen, ...props} = this.props;
+		let {update, persistEvents, onMount, visible, initialData, initialDataTransform, updateForm, seen, listen, ...props} = this.props;
 
 		if (!this.props.children || this.props.visible === false) {
 			return (null);
@@ -572,7 +599,7 @@ class Form extends React.Component {
 	_getReactProps($el, parentProps) {
 		if (this._formElementTypes.includes($el.type)) {
 			let valid = true;
-			let value = $el.props.defaultValue || '';
+			let value = $el.props.defaultValue || ''; // Just concerning ourselves with 'default' props, values will assigned later
 
 			valid = this._isElementValid($el.props);
 
@@ -605,6 +632,18 @@ class Form extends React.Component {
 
 			if (['radio', 'checkbox'].includes(props.type)) {
 				valid = props.checked || false;
+			}
+		}
+
+		if (props.type === 'number') {
+			valid = !isNaN(value);
+			if (valid) {
+				if (props.min && value < props.min) {
+					valid = false;
+				}
+				if (props.max && value > props.max) {
+					valid = false;
+				}
 			}
 		}
 
@@ -649,6 +688,11 @@ class Form extends React.Component {
 				
 
 				return;
+			}
+
+			// Don't send invalid IDs to the API
+			if (!value.valid) {
+				v = null;
 			}
 
 			values[key] = v;

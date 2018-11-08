@@ -1,29 +1,34 @@
 import React from 'react';
 
 class Summary extends React.Component {
-	parseReadableValue(value, type) {
+	parseReadableValue(value, element={}) {
+		let type = element.type;
+		let stock = '--';
 		let v = value || '';
 
-		if (v.toString().toLowerCase() === 'true') {
+		if (element.valid === false) {
+			v = stock;
+		} else if (v.toString().toLowerCase() === 'true') {
 			v = 'Yes';
 		} else if (v.toString().toLowerCase() === 'false') {
 			v = 'No';
 		} else if (typeof value === 'string' && value.length > 0) {
-			v = this.capitalizeFirstLetter(value);
 			if (type === 'textarea') {
 				v = `"${v}"`;
 			} else if (type === 'month') {
 				let month = value.match(/^[0-9]{4}-[0-9]{2}/);
 				v = (month) ? month[0] : 'Invalid Month';
+			} else if (type !== 'file') {
+				v = this.capitalizeFirstLetter(value);
 			}
 		} else if (Array.isArray(value) && value.length > 0) {
 			v = value.map(v => `"${this.capitalizeFirstLetter(v)}"`).join(', ');
 		} else if (v === '') {
-			v = '--';
+			v = stock;
 		} else if (!isNaN(value)) {
 			v = value;
 		} else {
-			v = '--';
+			v = stock;
 		}
 
 		return v;
@@ -111,7 +116,11 @@ class Summary extends React.Component {
 							return (
 								<li key={v.name || v.id} data-value={Array.isArray(v.value) ? v.value.join('-') : v.name || v.id}>
 									<div>{label || this.parseReadableValue(label || v.name || v.id)}</div>
-									<div>{this.parseReadableValue(value || v.value, v.type)}</div>
+									{(v.type === 'file' && v.value) ? (
+										<img src={v.value.replace(/(https:\/\/s3.eu-west-\2\.amazonaws.com\/vehicle-photos-stage|https:\/\/vehicle-photos-stage.s3.eu-west-2.amazonaws.com)/, '//motorway-stage.imgix.net') + '?h=100&w=100'}/>
+									) : (
+										<div>{this.parseReadableValue(value || v.value, v)}</div>
+									)}
 								</li>
 							);
 						})

@@ -17,6 +17,7 @@ import WheelsAndTyresForm from './components/PremiumOffer/WheelsAndTyresForm.jsx
 
 import Summary from './components/Form/Summary.jsx';
 import HiddenForms from './components/Form/HiddenForms.jsx';
+import Start from './components/PremiumOffer/Start.jsx';
 
 let accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF2cmlsQG1vdG9yd2F5LmNvLnVrIiwicG9zdGNvZGUiOiJXMzZBVyIsImlhdCI6MTUzOTI2ODY3MiwiZXhwIjoxNTQxODYwNjcyfQ.tgU3Hdld6IRzBjsS1ZUGfDu3YTCHq6x_j2l3QOzLEnU`;
 let params = (new URL(document.location)).searchParams;
@@ -101,7 +102,7 @@ class App extends React.Component {
       });
     };
 
-    if (e.target) {
+    if (e && e.target) {
       if (e.target.tagName === 'SELECT' || ['checkbox', 'radio', 'month'].includes(e.target.type)) {
         if (e.type === 'change') {
           setState();
@@ -130,7 +131,8 @@ class App extends React.Component {
           loading: false,
           offer: offer.data,
           filledSections: offer.filled_sections,
-          initialData: offer
+          initialData: offer,
+          photos: offer.photos
         }, () => {
           console.log(offer);
         });
@@ -171,11 +173,11 @@ class App extends React.Component {
     let routes = this.routes;
 
     let steps = {
-      basic_details : <BasicDetailsForm key='basic_details' initialData={this.hydrateUpToDateData('basic_details')} fields={this.state.initialData.fields} model={this.state.offer} seen={this.state.filledSections.includes('basic_details')}/>,
-      service_history: <ServiceHistoryForm key='service_history' initialData={this.hydrateUpToDateData('service_history')} seen={this.state.filledSections.includes('service_history')} />,
-      condition: <ConditionForm key='condition' initialData={this.hydrateUpToDateData('condition')} routes={routes} seen={this.state.filledSections.includes('condition')}/>,
-      wheels_and_tyres: <WheelsAndTyresForm key='wheels_and_tyres' initialData={this.hydrateUpToDateData('wheels_and_tyres')} routes={routes} seen={this.state.filledSections.includes('wheels_and_tyres')} />,
-      photos: <PhotosForm key='photos' routes={routes} update={this.update} />,
+      basic_details : <BasicDetailsForm key='basic_details' initialData={this.hydrateUpToDateData('basic_details')} fields={this.state.initialData.fields} model={this.state.offer} />,
+      service_history: <ServiceHistoryForm key='service_history' initialData={this.hydrateUpToDateData('service_history')} />,
+      condition: <ConditionForm key='condition' initialData={this.hydrateUpToDateData('condition')} />,
+      wheels_and_tyres: <WheelsAndTyresForm key='wheels_and_tyres' initialData={this.hydrateUpToDateData('wheels_and_tyres')} />,
+      photos: <PhotosForm key='photos' id={this.state.id} photos={this.state.photos} conditionAndWheels={{condition: this.hydrateUpToDateData('condition'), wheels_and_tyres: this.hydrateUpToDateData('wheels_and_tyres')}}/>,
       summary_view: <Summary key='summary' order={routes.map(r => r.replace(/-/g, '_'))} data={this.state.raw} offer={this.state.offer} />
     };
 
@@ -187,9 +189,15 @@ class App extends React.Component {
             <div className="progress">
               {
                 Object.keys(steps).filter((s,i) => (i !== routes.length - 1)).map(s => {
+                  let r = `/${s.replace(/_/g, '-')}`;
+                  let path = location.pathname.replace(/^\//, '');
+                  let here = (path.length > 0) ? r.includes(location.pathname.replace(/^\//, '')) : false;
+
                   return (this.state.progress[s]) ? (
-                    <div key={s} data-percentage={`${this.state.progress[s].percentage}%`}>
-                        <Link to={`/${s.replace(/_/g, '-')}`} />
+                    <div className={(here) ? 'here' : null} key={s} data-percentage={`${this.state.progress[s].percentage}%`}>
+                        {
+                          (!here) ? (<Link to={r} />) : (null)
+                        }
                         <span style={{height: `${this.state.progress[s].percentage}%`}}></span>
                     </div>
                   ) : (
@@ -217,14 +225,15 @@ class App extends React.Component {
                               return React.cloneElement(steps[s], {
                                 location: location,
                                 routes: routes,
-                                update: this.update
+                                update: this.update,
+                                seen: this.state.filledSections.includes(s),
                               });
                             }} />
                           )
                         })
                       }
                       <Route render={() => {
-                        return (<div>Default</div>)
+                        return (<div><Start/></div>)
                       }} />
                     </Switch>
                   </CSSTransition>

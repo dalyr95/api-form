@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>icons / service</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M24.6598464,10.4934654 L20.4084259,9.90369206 L19.8156296,5.65576537 L23.2366129,2.25222778 C20.8388674,1.56762399 18.258592,2.302221 16.5878153,4.14512141 C14.9170385,5.98802182 14.4478409,8.61705501 15.3787971,10.9195571 L2.72377033,23.5126462 C2.26035371,23.9735934 2,24.5988358 2,25.2507887 C2,25.9027416 2.26035371,26.5279839 2.72377033,26.9889311 L3.01625134,27.2799206 C3.4795613,27.740974 4.10800847,28 4.76330312,28 C5.41859776,28 6.04704493,27.740974 6.51035489,27.2799206 L19.2202218,14.6348691 C21.4321158,15.4431976 23.9101921,15.0029395 25.7041777,13.4829216 C27.4981633,11.9629036 28.3296359,9.59902887 27.879749,7.2977774 L24.6598464,10.4934654 Z" id="path-1"></path>
+    </defs>
+    <g id="icons-/-service" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <mask id="mask-2" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <use id="Shape" fill="#3C4D63" fill-rule="nonzero" xlink:href="#path-1"></use>
+    </g>
+</svg>

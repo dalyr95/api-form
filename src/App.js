@@ -51,6 +51,8 @@ class App extends React.Component {
     }
 
     update(e, data) {
+      if (e && e.persist) { e.persist(); }
+
       let state = {...this.state};
       state.progress[data.name] = data.progress;
       state.raw[data.name] = data.raw;

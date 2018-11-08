@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './ImageUpload.less';
 
 import DropZoneUploadItem from './DropZoneUploadItem.jsx';
 
@@ -110,7 +109,7 @@ class UploadMultiple extends React.Component {
   render() {
     if (this.state.showDropZone === false) {
       return (
-        <div className={styles.upload_multiple_text} onClick={this.showDropZone}><a href="#">Upload multiple images</a></div>
+        <div className={'upload_multiple_text'} onClick={this.showDropZone}><a href="#">Upload multiple images</a></div>
       );
     }
     let images;
@@ -136,7 +135,7 @@ class UploadMultiple extends React.Component {
       });
 
       images = (
-        <div className={styles.image_upload_multiple_images}>
+        <div className={'image_upload_multiple_images'}>
           {
             imagesArray.map(i => {
               if (i.type.startsWith('image/') === false) { return; }
@@ -151,8 +150,8 @@ class UploadMultiple extends React.Component {
 
               return (
                 <div key={`${i.name}-${i.size}-${i.lastModified}`}>
-                  <div className={styles.image_upload_multiple_single}>
-                    <div className={styles.image_input_image}><img src={src}/></div>
+                  <div className={'image_upload_multiple_single'}>
+                    <div className={'image_input_image'}><img src={src}/></div>
                   </div>
                   <label className="select">
                     <select defaultValue="" onChange={this.onDropDown.bind(this, i)}>
@@ -168,7 +167,7 @@ class UploadMultiple extends React.Component {
       );
     }
 
-    let dragging = (this.state.dragging === true) ? styles.dragging : '';
+    let dragging = (this.state.dragging === true) ? 'dragging' : '';
     let sections = [];
 
     Object.entries(this.props.sections).forEach(i => {
@@ -193,7 +192,7 @@ class UploadMultiple extends React.Component {
     return (
       <React.Fragment>
         <div
-          className={[styles.image_upload_multiple, dragging].join(' ')}
+          className={['image_upload_multiple', dragging].join(' ')}
           onDrop={this.onDrop}
           onDragOver={this.onDragOver}
           onDragExit={this.onDragExit}

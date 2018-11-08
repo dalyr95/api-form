@@ -9,7 +9,9 @@ import Navigation from './Navigation.jsx';
 
 class PhotosForm extends React.Component {
 	constructor(props) {
-		super(props);
+    super(props);
+    
+    this.update = this.update.bind(this);
 
     this.state = {
       sections: {
@@ -149,19 +151,15 @@ class PhotosForm extends React.Component {
         }
       }
     }
+
+    this.state.filteredSections = this.processSections();
   }
 
-  update() {
-    console.log('UPDATE!!!!');
-  }
-
-	render() {
-		let elements = [];
-
+  processSections() {
     let damageSections = [];
     let sections = JSON.parse(JSON.stringify(this.state.sections));
-    let damageSectionsClone = JSON.parse(JSON.stringify(this.state.sections.damage.inputs));
     let damageSectionsImages = {};
+    let damageSectionsClone = JSON.parse(JSON.stringify(sections.damage.inputs));
 
     let data = this.props;
     let photos = data.photos;
@@ -173,62 +171,7 @@ class PhotosForm extends React.Component {
           let title = section[0];
           section = section[1];
 
-          section.inputs.forEach(input => {
-            if (input.name === photo.kind) {
-              Object.keys(photo.meta).map((key) => {
-                photo.meta[key] = parseInt(photo.meta[key]);
-              });
-
-              input.blobURL = photo.url;
-              input.externalURL = photo.url;
-              input.coords = photo.meta;
-
-              if (title === 'damage') {
-                damageSectionsImages[input.name] = damageSectionsImages[input.name] + 1 || 0;
-                damageSections.push({...input, name: `${input.name}-${damageSectionsImages[input.name]}`});
-              }
-            }
-          });
-        });
-      });
-    }
-
-    //console.log(2, conditionAndWheels.condition.scratches);
-
-    sections.damage.inputs = sections.damage.inputs.filter(section => {
-      let path = section.condition.split('.');
-      return (conditionAndWheels[path[0]][path[1]] === true);
-    }).sort((a, b) => a.name.localeCompare(b.name));
-
-    //console.log(3, JSON.parse(JSON.stringify(sections.damage.inputs)));
-
-		Object.values(sections).forEach(s => {
-			s.inputs.forEach(i => {
-				elements.push({
-					element: 'input',
-					type: 'file',
-					required: true,
-					value: i.externalURL || null,
-					...i
-				})
-			});
-    });
-/*
-    let damageSections = [];
-    let damageSectionsClone = JSON.parse(JSON.stringify(this.state.sections.damage.inputs));
-    let damageSectionsImages = {};
-
-    let data = this.props;
-    let photosData = data.dataForPhotos;
-    let photos = data.photos;
-
-    if (photos && photos.length >= 0) {
-      photos.forEach(photo => {
-        Object.entries(this.state.sections).forEach(section => {
-          let title = section[0];
-          section = section[1];
-
-          section.inputs.forEach(input => {
+          section.inputs.forEach((input, i) => {
             if (input.name === photo.kind) {
               Object.keys(photo.meta).map((key) => {
                 photo.meta[key] = parseInt(photo.meta[key]);
@@ -249,26 +192,56 @@ class PhotosForm extends React.Component {
     }
 
     if (damageSections.length > 0) {
-      this.state.sections.damage.inputs = damageSectionsClone.map(i => {
-        return {...i, name: `${i.name}-${damageSectionsImages[i.name] + 1 || 0}`};
+      sections.damage.inputs = damageSectionsClone.map(i => {
+        let required = !damageSectionsImages[i.name];
+        return { ...i, name: `${i.name}-${damageSectionsImages[i.name] + 1 || 0}`, required: required };
       }).concat(damageSections).sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    let details = Object.assign({}, photosData);
-
-    this.state.sections.damage.inputs = this.state.sections.damage.inputs.filter(section => {
+    sections.damage.inputs = sections.damage.inputs.filter(section => {
       let path = section.condition.split('.');
-      return (details[path[0]][path[1]] === true);
+      let show = (conditionAndWheels[path[0]][path[1]] === true);
+      return show;
     }).sort((a, b) => a.name.localeCompare(b.name));
-*/
+
+    return sections;
+  }
+
+  update(sections) {
+    this.setState({
+      filteredSections: sections
+    });
+  }
+
+	render() {
+    let elements = [];
+
+		Object.values(this.state.filteredSections).forEach(s => {
+			s.inputs.forEach(i => {
+				elements.push({
+					element: 'input',
+					type: 'file',
+					required: s.required,
+          value: i.externalURL || i.croppedBlobURL || i.blobURL || null,
+          meta: {
+            summary: {
+              label: i.label
+            }
+          },
+					...i
+				})
+			});
+    });
+
+    /**
+     * TODO - Multiple upload doesn't update summary
+     */
 
 		return (
 			<Form
 				update={this.props.update}
 				name='photos'
 				onMount={this.props.update}
-				onBlur={this.props.update}
-				onChange={this.props.update}
 				initialData={this.props.initialData}
 				//onFocus={this.update}
 				persistEvents={false} // Has a performance impact, only use if you need event data
@@ -284,7 +257,7 @@ class PhotosForm extends React.Component {
             gigApi: 'https://motorway-dealership-platform-staging.azurewebsites.net/api',
             premiumFormImgix: '//motorway-stage.imgix.net'
           }}
-          sections={this.state.sections}
+          sections={this.state.filteredSections}
         />
         <Navigation {...this.props}></Navigation>
 			</Form>

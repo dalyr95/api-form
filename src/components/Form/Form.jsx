@@ -287,6 +287,13 @@ class Form extends React.Component {
 			this.__PreviousModel = JSON.stringify(this.__Model);
 		}
 
+		let updateProgress = (_values) => {
+			if (_values.shown && _values.required === true) {
+				this._progress.total[_values.name] = true;
+				if (_values.valid === true) { this._progress.completed[_values.name] = true; }
+			}
+		}
+
 		let updateModel = (_ReactProps) => {
 			if (!_ReactProps) { return; }
 			
@@ -303,6 +310,7 @@ class Form extends React.Component {
 				if (_ReactProps.shown !== existingModel.shown) {
 					existingModel.shown = _ReactProps.shown;
 				}
+				updateProgress(existingModel);
 				return;
 			}
 
@@ -317,6 +325,7 @@ class Form extends React.Component {
 			// Remove anything not needed
 			let {children, ..._Props} = _ReactProps;
 
+			updateProgress(_Props);
 			this.updateModel(name, _Props, this.__Model);
 		};
 
@@ -462,11 +471,6 @@ class Form extends React.Component {
 
 				// Work out progress
 				if (_values) {
-					if (_values.required === true) {
-						this._progress.total[_values.name] = true;
-						if (_values.valid === true) { this._progress.completed[_values.name] = true; }
-					}
-
 					if (this.props.seen || this.state.interacted[_values.name || _values.id]) {
 						customProps.className = `${child.props.className || ''} seen`;
 						customProps.className = `${customProps.className || ''} ${(_values.valid) ? 'valid' : 'invalid'}`.trim();
@@ -626,7 +630,7 @@ class Form extends React.Component {
 		let value = props.value;
 
 		if (props.required) {
-			if (value === '') {
+			if (value === '' || value == null) {
 				valid = false;
 			}
 

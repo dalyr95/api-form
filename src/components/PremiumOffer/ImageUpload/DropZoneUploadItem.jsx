@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './ImageUpload.less';
 
 class DropZoneUploadItem extends React.Component {
   constructor(props) {
@@ -37,7 +36,7 @@ class DropZoneUploadItem extends React.Component {
 
   render() {
     let ii = this.props.ii;
-    let className = (this.state.dragging) ? styles.over : '';
+    let className = (this.state.dragging) ? 'over' : '';
 
     return (
       <li

@@ -1,11 +1,12 @@
 import React from 'react';
-import styles from './ImageUpload.less';
 
 import UploadMultiple from './UploadMultiple.jsx';
 import UploadItem from './UploadItem.jsx';
 
 //import Helper from '../../forms/Helper/Helper.jsx';
 //import Portal from '../../portal/Portal.jsx';
+
+import './ImageUpload.css';
 
 let cx = require('classnames');
 
@@ -464,7 +465,7 @@ class Upload extends React.Component {
             />
           ));
 
-          inputs.push((<ul key={`damage-images-section-${cat[0]}`} className={cx(styles.image_section, styles.image_section_damage)}>{catInputs}</ul>));
+          inputs.push((<ul key={`damage-images-section-${cat[0]}`} className={cx('image_section', 'image_section_damage')}>{catInputs}</ul>));
         });
 
       } else {
@@ -480,14 +481,14 @@ class Upload extends React.Component {
             imgixURL={this.IMGIX_URL}
           />
         ));
-        inputs = (<ul className={styles.image_section}>{inputs}</ul>);
+        inputs = (<ul className={'image_section'}>{inputs}</ul>);
       }
 
       if (i[1].inputs.length > 0) {
         sections.push(
           <div key={i[0]} data-section={i[0]}>
             <h4>{i[1].title}</h4>
-            <div className={styles.image_strap}>
+            <div className={'image_strap'}>
               {i[1].strap}&nbsp;
               {/*<Helper helper={{ label: 'see examples', content: i[1].helper, modal: true, inline: true }}/>*/}
             </div>
@@ -499,18 +500,18 @@ class Upload extends React.Component {
 
     if (progress.length > 0) {
       progressAmount = (
-        <span className={styles.uploading_progress}><em style={{width: `${Math.round(progress.reduce((a, b) => a + b, 0) / progress.length)}%`}}></em></span>
+        <span className={'uploading_progress'}><em style={{width: `${Math.round(progress.reduce((a, b) => a + b, 0) / progress.length)}%`}}></em></span>
       );
 
       uploadingElement = (
-        <div className={styles.uploading_message}>
+        <div className={'uploading_message'}>
 					Uploading {progress.length} image{(progress.length > 1) ? 's' : ''}... {progressAmount}
         </div>
       );
     }
 
     return (
-      <div onDragOver={this.onDragOver} className={styles.component}>
+      <div onDragOver={this.onDragOver} className={'imageComponent'}>
         <UploadMultiple
           sections={this.state.sections}
           updateImage={this.updateImage}

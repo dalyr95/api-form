@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './ImageUpload.less';
 import Portal from '../../Portal.jsx';
 
 import Cropper from 'cropperjs';
@@ -280,16 +279,16 @@ class UploadItem extends React.Component {
       }
 
       content = (
-        <div className={styles.image_input_image}>
+        <div className={'image_input_image'}>
           {
             Number.isInteger(this.props.uploading) ? (
-              <span className={styles.image_progress}>
+              <span className={'image_progress'}>
                 <em style={{width: `${(this.props.uploading <= 2) ? 2 : this.props.uploading}%`}}></em>
               </span>
             ) : (
               <React.Fragment>
-                <button className={styles.image_input_edit} onClick={this.editImage.bind(this, ii)}>🔧</button>
-                <button className={styles.image_input_delete} onClick={this.deleteImage.bind(this, ii)}>&times;</button>
+                <button className={'image_input_edit'} onClick={this.editImage.bind(this, ii)}>🔧</button>
+                <button className={'image_input_delete'} onClick={this.deleteImage.bind(this, ii)}>&times;</button>
               </React.Fragment>
             )
           }
@@ -298,18 +297,18 @@ class UploadItem extends React.Component {
       );
     } else {
       content =  (
-        <div className={styles.image_input_button} data-name={ii.name}></div>
+        <div className={'image_input_button'} data-name={ii.name}></div>
       );
     }
 
     if (this.state.editImage === true) {
-      let cropperClasses = (this.state.ready) ? `${styles.cropper_container} ${styles.ready}` : styles.cropper_container;
+      let cropperClasses = (this.state.ready) ? `${'cropper_container'} ${'ready'}` : 'cropper_container';
 
       let editImageContent, editImageLoader;
 
       if (Number.isInteger(this.state.loadingEditImage) || this.state.cropperBlobUrl) {
         editImageLoader = (
-          <div className={styles.cropperLoading}>
+          <div className={'cropperLoading'}>
             <em style={{width: `${(Number.isInteger(this.state.loadingEditImage)) ? this.state.loadingEditImage : 100}%`}}/>
           </div>
         );
@@ -318,16 +317,16 @@ class UploadItem extends React.Component {
       if (this.state.cropperBlobUrl) {
         editImageContent = (
           <div className={cropperClasses} style={{opacity: (this.state.ready) ? 1 : 0}}>
-            <div className={styles.cropper_img}>
+            <div className={'cropper_img'}>
               <img ref={this.$cropper} src={this.state.cropperBlobUrl} crossOrigin="true" />
             </div>
-            <div className={styles.cropper_controls}>
+            <div className={'cropper_controls'}>
               <ul>
                 <li><button className={cx('button light')} onClick={this.cropperCancel}>Cancel</button></li>
-                <li><button className={cx(styles.zoomIn, 'button light')} onClick={this.cropperZoom.bind(this, 1)}>+</button></li>
-                <li><button className={cx(styles.zoomOut, 'button light')} onClick={this.cropperZoom.bind(this, -1)}>-</button></li>
-                <li><button className={cx(styles.rotateLeft, 'button light')} onClick={this.cropperRotate.bind(this, -90)}>Rotate 90 Left</button></li>
-                <li><button className={cx(styles.rotateRight, 'button light')} onClick={this.cropperRotate.bind(this, 90)}>Rotate 90 Right</button></li>
+                <li><button className={cx('zoomIn', 'button light')} onClick={this.cropperZoom.bind(this, 1)}>+</button></li>
+                <li><button className={cx('zoomOut', 'button light')} onClick={this.cropperZoom.bind(this, -1)}>-</button></li>
+                <li><button className={cx('rotateLeft', 'button light')} onClick={this.cropperRotate.bind(this, -90)}>Rotate 90 Left</button></li>
+                <li><button className={cx('rotateRight', 'button light')} onClick={this.cropperRotate.bind(this, 90)}>Rotate 90 Right</button></li>
                 <li><button onClick={this.cropperSave.bind(this, ii)}>Save changes</button></li>
               </ul>
             </div>
@@ -338,9 +337,9 @@ class UploadItem extends React.Component {
       editImage = (
         <Portal
           id='image-upload-edit'
-          containerStyle={styles.component}
+          containerStyle={'imageComponent'}
         >
-          <div className={styles.cropper_modal} onClick={this.dismissModal}>
+          <div className={'cropper_modal'} onClick={this.dismissModal}>
             {editImageLoader}
             {editImageContent}
           </div>
@@ -351,16 +350,16 @@ class UploadItem extends React.Component {
     let label = ii.label.split(' - ');
     label = (label.length > 1) ? (
       <React.Fragment>
-        <span className={styles.image_input_label}>{label[0]}</span>
-        <span className={styles.image_input_label}>{label[1]}</span>
+        <span className={'image_input_label'}>{label[0]}</span>
+        <span className={'image_input_label'}>{label[1]}</span>
       </React.Fragment>
     ) : (
-      <span className={styles.image_input_label}>{label[0]}</span>
+      <span className={'image_input_label'}>{label[0]}</span>
     );
 
     return (
       <li
-        className={cx(styles.image_input, {[styles.dragging]: this.state.dragging})}
+        className={cx('image_input', {['dragging']: this.state.dragging})}
         onDrop={this.onDrop}
         onDragOver={this.onDragOver}
         onDragExit={this.onDragExit}

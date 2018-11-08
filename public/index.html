@@ -47,12 +47,15 @@
       }
 
       .forms > div {
-        padding: 20px;
         position: relative;
       }
 
-      .forms form {
-        max-width: 100%;
+			.forms form,
+			.summary,
+			.panel {
+				padding: 20px;
+				width: 100%;
+				will-change: transform;
       }
 
 			#summary {
@@ -60,7 +63,6 @@
 				align-self: flex-start;
 				max-height: calc(100vh - 61px);
 				overflow-y: scroll;
-				padding: 20px;
 				position: sticky;
 				top: 61px;
 				width: 40%;
@@ -129,7 +131,12 @@
 				overflow: hidden;
 				position: relative;
 				width: 40px;
-      }
+			}
+
+			.progress > div.here {
+				box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.4);
+				border: 2px solid #fff;
+			}
       
       .progress > div a {
 				bottom: 0;
@@ -210,8 +217,8 @@
       .prev-enter:not([class*="enter-done"]) {
         position: absolute;
         transform: translateX(-100%);
-        width: calc(100% - 40px);
-        will-change: transform;
+				will-change: transform;
+				top: 0;
       }
 
       .prev-enter.prev-enter-active:not([class*="enter-done"]) {
@@ -223,14 +230,14 @@
       .prev-enter + .next-exit:not([class*="enter-done"]) {
         position: absolute;
         transform: translateX(0%);
-        width: calc(100% - 40px);
-        will-change: transform;
+				will-change: transform;
+				top: 0;
       }
 
       .next-enter:not([class*="enter-done"]) {
         position: absolute;
         transform: translateX(100%);
-        width: calc(100% - 40px);
+				top: 0;
       }
 
       .next-enter.next-enter-active:not([class*="enter-done"]) {
@@ -241,7 +248,7 @@
       .next-leave:not([class*="enter-done"]) {
         position: absolute;
         transform: translateX(0%);
-        width: calc(100% - 40px);
+				top: 0;
       }
 
       .next-exit.next-exit-active:not([class*="enter-done"]) {

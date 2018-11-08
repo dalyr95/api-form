@@ -22,7 +22,7 @@ let accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF2cmlsQG1v
 let params = (new URL(document.location)).searchParams;
 let token = params.get('token') || accessToken;
 let vrm = params.get('vrm') || 'HJ1';
-let platform = params.get('platform') || 'http://192.168.86.98:3030/api';
+let platform = params.get('platform') || 'http://192.168.86.110:3030/api';
 
 class App extends React.Component {
   constructor(props) {

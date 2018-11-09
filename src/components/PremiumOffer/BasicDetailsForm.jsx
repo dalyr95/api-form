@@ -85,7 +85,7 @@ class BasicDetailsForm extends React.Component {
 						</div>
 					</Fieldset>
 					{
-						/*
+
 						// Example of serialization object
 						<Fieldset name="equipment1" serialization="object">
 							<input id="equipment_00" type="checkbox" value="sat_nav"/><label htmlFor="equipment_00">Sat nav</label>
@@ -94,7 +94,7 @@ class BasicDetailsForm extends React.Component {
 							<input id="equipment_30" type="checkbox" value="parking_cam"/><label htmlFor="equipment_30">Rear parking camera</label>
 							<input id="equipment_40" type="checkbox" value="sound_system"/><label htmlFor="equipment_40">Upgraded sound system</label>
 						</Fieldset>
-						*/
+
 					}
 					{/* TODO - Support meta on an input */}
 					<h4>What colour are the seats?</h4>
@@ -122,7 +122,7 @@ class BasicDetailsForm extends React.Component {
 					<h4>How are they upholstered?</h4>
 					<label className="select">
 						<select name="seat_fabric" required meta={{summary: { mutate: function(fields) {
-								let value;
+							let value;
 							if (this.props.model.basic_details.seat_fabric) {
 								value = fields.filter(f => {
 									return this.props.model.basic_details.seat_fabric === f.value

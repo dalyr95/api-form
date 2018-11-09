@@ -4,7 +4,7 @@ class Summary extends React.Component {
 	parseReadableValue(value, element={}) {
 		let type = element.type;
 		let stock = '--';
-		let v = value || '';
+		let v = (value != null) ? value : '';
 
 		if (element.valid === false) {
 			v = stock;
@@ -23,6 +23,8 @@ class Summary extends React.Component {
 			}
 		} else if (Array.isArray(value) && value.length > 0) {
 			v = value.map(v => `"${this.capitalizeFirstLetter(v)}"`).join(', ');
+		} else if (v instanceof Object) {
+			v = JSON.stringify(v);
 		} else if (v === '') {
 			v = stock;
 		} else if (!isNaN(value)) {
@@ -66,7 +68,7 @@ class Summary extends React.Component {
 					if (value.serialization === 'array') {
 						f.value.push(value.value);
 					} else {
-						f[value.name || value.id].value = value.value;
+						f.value[value.name || value.id] = value.value;
 					}
 
 					return;

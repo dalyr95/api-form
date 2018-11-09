@@ -118,8 +118,8 @@ class App extends React.Component {
 
   async componentDidMount() {
     //fetch("https://motorway-platform-stage.herokuapp.com/api/premium-offer?vrm=RD1", {"credentials":"omit","headers":{"x-access-token":accessToken},"body":null,"method":"GET","mode":"no-cors"})
-    fetch(`${platform}/premium-offer?vrm=${vrm}`, {"credentials":"omit","headers":{"x-access-token":token},"body":null,"method":"GET","mode":"cors"})
-    //fetch('/offer.json')
+    //fetch(`${platform}/premium-offer?vrm=${vrm}`, {"credentials":"omit","headers":{"x-access-token":token},"body":null,"method":"GET","mode":"cors"})
+    fetch('/offer.json')
       .then(resp => resp.json())
       .then((offer) => {
         if (!offer.data) {

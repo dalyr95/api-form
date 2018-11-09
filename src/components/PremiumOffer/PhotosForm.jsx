@@ -156,6 +156,7 @@ class PhotosForm extends React.Component {
   }
 
   processSections() {
+    console.log('processSectiosn');
     let damageSections = [];
     let sections = JSON.parse(JSON.stringify(this.state.sections));
     let damageSectionsImages = {};
@@ -214,9 +215,12 @@ class PhotosForm extends React.Component {
   }
 
 	render() {
+    console.log('render!!');
     let elements = [];
 
-		Object.values(this.state.filteredSections).forEach(s => {
+    let filteredSections = this.processSections();
+
+		Object.values(filteredSections).forEach(s => {
 			s.inputs.forEach(i => {
 				elements.push({
 					element: 'input',
@@ -257,7 +261,7 @@ class PhotosForm extends React.Component {
             gigApi: 'https://motorway-dealership-platform-staging.azurewebsites.net/api',
             premiumFormImgix: '//motorway-stage.imgix.net'
           }}
-          sections={this.state.filteredSections}
+          sections={filteredSections}
         />
         <Navigation {...this.props}></Navigation>
 			</Form>

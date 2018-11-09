@@ -119,9 +119,9 @@ class Summary extends React.Component {
 								<li key={v.name || v.id} data-value={Array.isArray(v.value) ? v.value.join('-') : v.name || v.id}>
 									<div>{label || this.parseReadableValue(label || v.name || v.id)}</div>
 									{(v.type === 'file' && v.value) ? (
-										<img src={
+										<div><img src={
 											(v.value.includes('blob')) ? v.value : v.value.replace(/(https:\/\/s3.eu-west-\2\.amazonaws.com\/vehicle-photos-stage|https:\/\/vehicle-photos-stage.s3.eu-west-2.amazonaws.com)/, '//motorway-stage.imgix.net') + '?h=100&w=100'
-										}/>
+										}/></div>
 									) : (
 										<div>{this.parseReadableValue(value || v.value, v)}</div>
 									)}
